@@ -32,7 +32,7 @@ export default async function handler(req, res) {
     const groupsData = await groupsResponse.json();
 
     const membership = (groupsData.data || []).find(
-      entry => entry.group && entry.group.id === 831503444
+      entry => entry.group && entry.group.id === 242317433
     );
 
     if (!membership) {
@@ -42,8 +42,8 @@ export default async function handler(req, res) {
     const roleRank = membership.role?.rank ?? 0;
     const roleName = membership.role?.name ?? "Unknown Role";
 
-    if (roleRank < 18) {
-      return res.status(403).json({ error: "Access denied. Required group rank is 18 or higher." });
+    if (roleRank < 248) {
+      return res.status(403).json({ error: "Access denied. Required group rank is 248 or higher." });
     }
 
     return res.status(200).json({
