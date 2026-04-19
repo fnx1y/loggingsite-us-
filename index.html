@@ -1,279 +1,755 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Global</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="description" content="HTML5 website template">
-  <meta name="keywords" content="global, template, html, sass, jquery">
-  <meta name="author" content="Bucky Maler">
-  <link rel="stylesheet" href="assets/css/main.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Promotion Logs Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --bg-1:#081a2d;
+      --bg-2:#102947;
+      --bg-3:#173a67;
+      --panel:rgba(10,19,34,0.72);
+      --panel-2:rgba(16,31,54,0.78);
+      --line:rgba(255,255,255,0.08);
+      --soft:rgba(225,236,255,0.66);
+      --text:#eef5ff;
+      --accent:#6ca8ff;
+      --accent-2:#88bbff;
+      --danger:#ff6b6b;
+      --shadow:0 18px 60px rgba(0,0,0,0.35);
+      --radius:22px;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      font-family:Inter,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 15% 20%, rgba(108,168,255,0.16), transparent 22%),
+        radial-gradient(circle at 80% 18%, rgba(136,187,255,0.10), transparent 25%),
+        linear-gradient(135deg,var(--bg-1),var(--bg-2) 48%,var(--bg-3));
+      overflow:hidden;
+    }
+
+    .bg{
+      position:fixed;
+      inset:0;
+      filter:blur(18px);
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.08), transparent 20%),
+        radial-gradient(circle at 78% 26%, rgba(255,255,255,0.06), transparent 22%);
+      pointer-events:none;
+    }
+
+    .auth-shell{
+      position:fixed;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+      z-index:5;
+      transition:opacity .3s ease, visibility .3s ease;
+    }
+
+    body.authed .auth-shell{
+      opacity:0;
+      visibility:hidden;
+      pointer-events:none;
+    }
+
+    .auth-card{
+      width:min(460px, 92vw);
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:28px;
+      padding:28px;
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(16px);
+    }
+
+    .eyebrow{
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.22em;
+      color:var(--soft);
+      margin-bottom:10px;
+      font-weight:800;
+    }
+
+    .auth-card h1{
+      font-size:34px;
+      line-height:1.02;
+      letter-spacing:-0.04em;
+      margin-bottom:14px;
+    }
+
+    .auth-card p{
+      color:var(--soft);
+      line-height:1.75;
+      font-size:14px;
+      margin-bottom:18px;
+    }
+
+    .stack{display:grid;gap:12px}
+
+    .input, .textarea, .select{
+      width:100%;
+      background:rgba(255,255,255,0.05);
+      color:var(--text);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px 15px;
+      outline:none;
+      font:inherit;
+    }
+
+    .textarea{
+      min-height:120px;
+      resize:vertical;
+    }
+
+    .input:focus, .textarea:focus, .select:focus{
+      border-color:rgba(108,168,255,0.45);
+      background:rgba(255,255,255,0.07);
+    }
+
+    .btn{
+      border:none;
+      cursor:pointer;
+      border-radius:16px;
+      padding:14px 16px;
+      font:inherit;
+      font-weight:800;
+      color:#fff;
+      background:linear-gradient(135deg,var(--accent),var(--accent-2));
+      box-shadow:0 14px 34px rgba(108,168,255,0.24);
+    }
+
+    .btn.secondary{
+      background:rgba(255,255,255,0.06);
+      border:1px solid var(--line);
+      box-shadow:none;
+      color:var(--text);
+    }
+
+    .status{
+      min-height:20px;
+      font-size:13px;
+      color:var(--soft);
+    }
+
+    .status.error{color:#ffd0d0}
+    .status.ok{color:#cfe7ff}
+
+    .app{
+      display:none;
+      height:100%;
+      position:relative;
+      z-index:2;
+    }
+
+    body.authed .app{display:flex}
+
+    .sidebar{
+      width:300px;
+      height:100%;
+      background:rgba(8,15,27,0.72);
+      border-right:1px solid var(--line);
+      padding:22px 18px;
+      backdrop-filter:blur(14px);
+    }
+
+    .brand{
+      padding:10px 10px 18px;
+      border-bottom:1px solid var(--line);
+      margin-bottom:12px;
+    }
+
+    .brand h2{
+      font-size:20px;
+      letter-spacing:-0.03em;
+      margin-top:4px;
+    }
+
+    .brand p{
+      color:var(--soft);
+      font-size:13px;
+      line-height:1.65;
+      margin-top:8px;
+    }
+
+    .nav{
+      display:grid;
+      gap:8px;
+      margin-top:10px;
+    }
+
+    .nav-btn{
+      width:100%;
+      text-align:left;
+      border:1px solid transparent;
+      background:transparent;
+      color:var(--soft);
+      padding:12px 13px;
+      border-radius:16px;
+      cursor:pointer;
+      font:inherit;
+      font-weight:700;
+    }
+
+    .nav-btn:hover,
+    .nav-btn.active{
+      background:rgba(255,255,255,0.06);
+      border-color:var(--line);
+      color:#fff;
+    }
+
+    .userbox{
+      margin-top:18px;
+      padding:15px;
+      border-radius:18px;
+      background:rgba(255,255,255,0.04);
+      border:1px solid var(--line);
+    }
+
+    .userbox .mini{
+      color:var(--soft);
+      font-size:11px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      font-weight:800;
+      margin-bottom:8px;
+    }
+
+    .userbox .name{
+      font-size:15px;
+      font-weight:800;
+      margin-bottom:5px;
+    }
+
+    .userbox .rank{
+      color:var(--soft);
+      font-size:13px;
+      line-height:1.6;
+    }
+
+    .main{
+      flex:1;
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      height:100%;
+    }
+
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      padding:20px 24px;
+      border-bottom:1px solid var(--line);
+      background:rgba(8,14,24,0.34);
+      backdrop-filter:blur(10px);
+    }
+
+    .topbar h3{
+      font-size:22px;
+      letter-spacing:-0.03em;
+    }
+
+    .topbar p{
+      font-size:13px;
+      color:var(--soft);
+      margin-top:4px;
+    }
+
+    .pill{
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,0.05);
+      font-size:13px;
+      font-weight:700;
+    }
+
+    .content{
+      flex:1;
+      overflow:auto;
+      padding:24px;
+    }
+
+    .page{display:none}
+    .page.active{display:block}
+
+    .hero{
+      padding:24px;
+      border-radius:28px;
+      background:linear-gradient(135deg, rgba(108,168,255,0.18), rgba(255,255,255,0.03));
+      border:1px solid rgba(108,168,255,0.12);
+      box-shadow:var(--shadow);
+      margin-bottom:20px;
+    }
+
+    .hero h1{
+      font-size:38px;
+      line-height:1.02;
+      letter-spacing:-0.05em;
+      margin-bottom:12px;
+    }
+
+    .hero p{
+      color:var(--soft);
+      font-size:15px;
+      line-height:1.82;
+      max-width:960px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(12,1fr);
+      gap:18px;
+    }
+
+    .card{
+      grid-column:span 12;
+      background:var(--panel-2);
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:22px;
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(12px);
+    }
+
+    .card.half{grid-column:span 6}
+
+    .section-label{
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.22em;
+      font-weight:800;
+      color:var(--soft);
+      margin-bottom:10px;
+    }
+
+    .card h4{
+      font-size:22px;
+      letter-spacing:-0.03em;
+      margin-bottom:12px;
+    }
+
+    .card p{
+      color:var(--soft);
+      line-height:1.78;
+      font-size:14px;
+      margin-bottom:14px;
+    }
+
+    .form-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+    }
+
+    .full{grid-column:1 / -1}
+
+    .actions{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:14px;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      overflow:hidden;
+      border-radius:18px;
+      margin-top:8px;
+    }
+
+    th, td{
+      text-align:left;
+      padding:14px 14px;
+      border-bottom:1px solid var(--line);
+      font-size:14px;
+      vertical-align:top;
+    }
+
+    th{
+      color:#fff;
+      background:rgba(255,255,255,0.05);
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+    }
+
+    td{
+      color:var(--soft);
+      background:rgba(255,255,255,0.03);
+    }
+
+    tr:last-child td{border-bottom:none}
+
+    .empty{
+      color:var(--soft);
+      font-size:14px;
+      padding:6px 0 2px;
+    }
+
+    @media (max-width:1100px){
+      .card.half{grid-column:span 12}
+      .form-grid{grid-template-columns:1fr}
+    }
+
+    @media (max-width:760px){
+      body{overflow:auto}
+      .app{flex-direction:column;height:auto;min-height:100%}
+      .sidebar{width:100%;height:auto;border-right:none;border-bottom:1px solid var(--line)}
+      .topbar{padding:18px}
+      .content{padding:18px}
+    }
+  </style>
 </head>
 <body>
+  <div class="bg"></div>
 
-<!-- notification for small viewports and landscape oriented smartphones -->
-<div class="device-notification">
-  <a class="device-notification--logo" href="#0">
-    <img src="assets/img/logo.png" alt="Global">
-    <p>Global</p>
-  </a>
-  <p class="device-notification--message">Global has so much to offer that we must request you orient your device to portrait or find a larger screen. You won't be disappointed.</p>
-</div>
+  <section class="auth-shell">
+    <div class="auth-card">
+      <div class="eyebrow">Authorized Logging Portal</div>
+      <h1>Promotion Log System</h1>
+      <p>
+        Sign in with a Roblox username to verify group membership in group 831503444. Access is granted only to users whose group role rank is 18 or higher. Roblox user lookup and group membership checks are handled server-side. :contentReference[oaicite:1]{index=1}
+      </p>
 
-<div class="perspective effect-rotate-left">
-  <div class="container"><div class="outer-nav--return"></div>
-    <div id="viewport" class="l-viewport">
-      <div class="l-wrapper">
-        <header class="header">
-          <a class="header--logo" href="#0">
-            <img src="assets/img/logo.png" alt="Global">
-            <p>Global</p>
-          </a>
-          <button class="header--cta cta">Hire Us</button>
-          <div class="header--nav-toggle">
-            <span></span>
-          </div>
-        </header>
-        <nav class="l-side-nav">
-          <ul class="side-nav">
-            <li class="is-active"><span>Home</span></li>
-            <li><span>Works</span></li>
-            <li><span>About</span></li>
-            <li><span>Contact</span></li>
-            <li><span>Hire us</span></li>
-          </ul>
-        </nav>
-        <ul class="l-main-content main-content">
-          <li class="l-section section section--is-active">
-            <div class="intro">
-              <div class="intro--banner">
-                <h1>Your next<br>interactive<br>experience</h1>
-                <button class="cta">Hire Us
-                  <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 150 118" style="enable-background:new 0 0 150 118;" xml:space="preserve">
-                  <g transform="translate(0.000000,118.000000) scale(0.100000,-0.100000)">
-                    <path d="M870,1167c-34-17-55-57-46-90c3-15,81-100,194-211l187-185l-565-1c-431,0-571-3-590-13c-55-28-64-94-18-137c21-20,33-20,597-20h575l-192-193C800,103,794,94,849,39c20-20,39-29,61-29c28,0,63,30,298,262c147,144,272,271,279,282c30,51,23,60-219,304C947,1180,926,1196,870,1167z"/>
-                  </g>
-                  </svg>
-                  <span class="btn-background"></span>
-                </button>
-                <img src="assets/img/introduction-visual.png" alt="Welcome">
-              </div>
-              <div class="intro--options">
-                <a href="#0">
-                  <h3>Metiew &amp; Smith</h3>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit sed do.</p>
-                </a>
-                <a href="#0">
-                  <h3>Fantasy interactive</h3>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit sed do.</p>
-                </a>
-                <a href="#0">
-                  <h3>Paul &amp; shark</h3>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit sed do.</p>
-                </a>
-              </div>
-            </div>
-          </li>
-          <li class="l-section section">
-            <div class="work">
-              <h2>Selected work</h2>
-              <div class="work--lockup">
-                <ul class="slider">
-                  <li class="slider--item slider--item-left">
-                    <a href="#0">
-                      <div class="slider--item-image">
-                        <img src="assets/img/work-victory.jpg" alt="Victory">
-                      </div>
-                      <p class="slider--item-title">Victory</p>
-                      <p class="slider--item-description">Lorem ipsum dolor sit amet, consectetur adipisicing elit sed do.</p>
-                    </a>
-                  </li>
-                  <li class="slider--item slider--item-center">
-                    <a href="#0">
-                      <div class="slider--item-image">
-                        <img src="assets/img/work-metiew-smith.jpg" alt="Metiew and Smith">
-                      </div>
-                      <p class="slider--item-title">Metiew &amp; Smith</p>
-                      <p class="slider--item-description">Lorem ipsum dolor sit amet, consectetur adipisicing elit sed do.</p>
-                    </a>
-                  </li>
-                  <li class="slider--item slider--item-right">
-                    <a href="#0">
-                      <div class="slider--item-image">
-                        <img src="assets/img/work-alex-nowak.jpg" alt="Alex Nowak">
-                      </div>
-                      <p class="slider--item-title">Alex Nowak</p>
-                      <p class="slider--item-description">Lorem ipsum dolor sit amet, consectetur adipisicing elit sed do.</p>
-                    </a>
-                  </li>
-                </ul>
-                <div class="slider--prev">
-                  <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                  viewBox="0 0 150 118" style="enable-background:new 0 0 150 118;" xml:space="preserve">
-                  <g transform="translate(0.000000,118.000000) scale(0.100000,-0.100000)">
-                    <path d="M561,1169C525,1155,10,640,3,612c-3-13,1-36,8-52c8-15,134-145,281-289C527,41,562,10,590,10c22,0,41,9,61,29
-                    c55,55,49,64-163,278L296,510h575c564,0,576,0,597,20c46,43,37,109-18,137c-19,10-159,13-590,13l-565,1l182,180
-                    c101,99,187,188,193,199c16,30,12,57-12,84C631,1174,595,1183,561,1169z"/>
-                  </g>
-                  </svg>
-                </div>
-                <div class="slider--next">
-                  <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 150 118" style="enable-background:new 0 0 150 118;" xml:space="preserve">
-                  <g transform="translate(0.000000,118.000000) scale(0.100000,-0.100000)">
-                    <path d="M870,1167c-34-17-55-57-46-90c3-15,81-100,194-211l187-185l-565-1c-431,0-571-3-590-13c-55-28-64-94-18-137c21-20,33-20,597-20h575l-192-193C800,103,794,94,849,39c20-20,39-29,61-29c28,0,63,30,298,262c147,144,272,271,279,282c30,51,23,60-219,304C947,1180,926,1196,870,1167z"/>
-                  </g>
-                  </svg>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li class="l-section section">
-            <div class="about">
-              <div class="about--banner">
-                <h2>We<br>believe in<br>passionate<br>people</h2>
-                <a href="#0">Career
-                  <span>
-                    <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 150 118" style="enable-background:new 0 0 150 118;" xml:space="preserve">
-                    <g transform="translate(0.000000,118.000000) scale(0.100000,-0.100000)">
-                      <path d="M870,1167c-34-17-55-57-46-90c3-15,81-100,194-211l187-185l-565-1c-431,0-571-3-590-13c-55-28-64-94-18-137c21-20,33-20,597-20h575l-192-193C800,103,794,94,849,39c20-20,39-29,61-29c28,0,63,30,298,262c147,144,272,271,279,282c30,51,23,60-219,304C947,1180,926,1196,870,1167z"/>
-                    </g>
-                    </svg>
-                  </span>
-                </a>
-                <img src="assets/img/about-visual.png" alt="About Us">
-              </div>
-              <div class="about--options">
-                <a href="#0">
-                  <h3>Winners</h3>
-                </a>
-                <a href="#0">
-                  <h3>Philosophy</h3>
-                </a>
-                <a href="#0">
-                  <h3>History</h3>
-                </a>
-              </div>
-            </div>
-          </li>
-          <li class="l-section section">
-            <div class="contact">
-              <div class="contact--lockup">
-                <div class="modal">
-                  <div class="modal--information">
-                    <p>Pawia 5, 31-154 Kraków, Poland</p>
-                    <a href="mailto:ouremail@gmail.com">ouremail@gmail.com</a>
-                    <a href="tel:+148126287560">+48 12 628 75 60</a>
-                  </div>
-                  <ul class="modal--options">
-                    <li><a href="#0">Bēhance</a></li>
-                    <li><a href="#0">dribbble</a></li>
-                    <li><a href="mailto:ouremail@gmail.com">Contact Us</a></li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li class="l-section section">
-            <div class="hire">
-              <h2>You want us to do</h2>
-              <!-- checkout formspree.io for easy form setup -->
-              <form class="work-request">
-                <div class="work-request--options">
-                  <span class="options-a">
-                    <input id="opt-1" type="checkbox" value="app design">
-                    <label for="opt-1">
-                      <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                      viewBox="0 0 150 111" style="enable-background:new 0 0 150 111;" xml:space="preserve">
-                      <g transform="translate(0.000000,111.000000) scale(0.100000,-0.100000)">
-                        <path d="M950,705L555,310L360,505C253,612,160,700,155,700c-6,0-44-34-85-75l-75-75l278-278L550-5l475,475c261,261,475,480,475,485c0,13-132,145-145,145C1349,1100,1167,922,950,705z"/>
-                      </g>
-                      </svg>
-                      App Design
-                    </label>
-                    <input id="opt-2" type="checkbox" value="graphic design">
-                    <label for="opt-2">
-                      <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                      viewBox="0 0 150 111" style="enable-background:new 0 0 150 111;" xml:space="preserve">
-                      <g transform="translate(0.000000,111.000000) scale(0.100000,-0.100000)">
-                        <path d="M950,705L555,310L360,505C253,612,160,700,155,700c-6,0-44-34-85-75l-75-75l278-278L550-5l475,475c261,261,475,480,475,485c0,13-132,145-145,145C1349,1100,1167,922,950,705z"/>
-                      </g>
-                      </svg>
-                      Graphic Design
-                    </label>
-                    <input id="opt-3" type="checkbox" value="motion design">
-                    <label for="opt-3">
-                      <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                      viewBox="0 0 150 111" style="enable-background:new 0 0 150 111;" xml:space="preserve">
-                      <g transform="translate(0.000000,111.000000) scale(0.100000,-0.100000)">
-                        <path d="M950,705L555,310L360,505C253,612,160,700,155,700c-6,0-44-34-85-75l-75-75l278-278L550-5l475,475c261,261,475,480,475,485c0,13-132,145-145,145C1349,1100,1167,922,950,705z"/>
-                      </g>
-                      </svg>
-                      Motion Design
-                    </label>
-                  </span>
-                  <span class="options-b">
-                    <input id="opt-4" type="checkbox" value="ux design">
-                    <label for="opt-4">
-                      <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                      viewBox="0 0 150 111" style="enable-background:new 0 0 150 111;" xml:space="preserve">
-                      <g transform="translate(0.000000,111.000000) scale(0.100000,-0.100000)">
-                        <path d="M950,705L555,310L360,505C253,612,160,700,155,700c-6,0-44-34-85-75l-75-75l278-278L550-5l475,475c261,261,475,480,475,485c0,13-132,145-145,145C1349,1100,1167,922,950,705z"/>
-                      </g>
-                      </svg>
-                      UX Design
-                    </label>
-                    <input id="opt-5" type="checkbox" value="webdesign">
-                    <label for="opt-5">
-                      <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                      viewBox="0 0 150 111" style="enable-background:new 0 0 150 111;" xml:space="preserve">
-                      <g transform="translate(0.000000,111.000000) scale(0.100000,-0.100000)">
-                        <path d="M950,705L555,310L360,505C253,612,160,700,155,700c-6,0-44-34-85-75l-75-75l278-278L550-5l475,475c261,261,475,480,475,485c0,13-132,145-145,145C1349,1100,1167,922,950,705z"/>
-                      </g>
-                      </svg>
-                      Webdesign
-                    </label>
-                    <input id="opt-6" type="checkbox" value="marketing">
-                    <label for="opt-6">
-                      <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                      viewBox="0 0 150 111" style="enable-background:new 0 0 150 111;" xml:space="preserve">
-                      <g transform="translate(0.000000,111.000000) scale(0.100000,-0.100000)">
-                        <path d="M950,705L555,310L360,505C253,612,160,700,155,700c-6,0-44-34-85-75l-75-75l278-278L550-5l475,475c261,261,475,480,475,485c0,13-132,145-145,145C1349,1100,1167,922,950,705z"/>
-                      </g>
-                      </svg>
-                      Marketing
-                    </label>
-                  </span>
-                </div>
-                <div class="work-request--information">
-                  <div class="information-name">
-                    <input id="name" type="text" spellcheck="false">
-                    <label for="name">Name</label>
-                  </div>
-                  <div class="information-email">
-                    <input id="email" type="email" spellcheck="false">
-                    <label for="email">Email</label>
-                  </div>
-                </div>
-                <input type="submit" value="Send Request">
-              </form>
-            </div>
-          </li>
-        </ul>
+      <div class="stack">
+        <input id="authUsername" class="input" type="text" placeholder="Enter Roblox username" />
+        <button id="authBtn" class="btn" type="button">Authenticate</button>
+        <div id="authStatus" class="status"></div>
       </div>
     </div>
-  </div>
-  <ul class="outer-nav">
-    <li class="is-active">Home</li>
-    <li>Works</li>
-    <li>About</li>
-    <li>Contact</li>
-    <li>Hire us</li>
-  </ul>
-</div>
+  </section>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-<script>window.jQuery || document.write('<script src="assets/js/vendor/jquery-2.2.4.min.js"><\/script>')</script>
-<script src="assets/js/functions-min.js"></script>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="eyebrow">Department Logging</div>
+        <h2>Public Logs Panel</h2>
+        <p>
+          A modern log system inspired by your sheet layout, rebuilt for authorized personnel to add, review, and manage promotion and demotion entries.
+        </p>
+      </div>
+
+      <nav class="nav" id="nav">
+        <button class="nav-btn active" data-page="dashboard">Dashboard</button>
+        <button class="nav-btn" data-page="new-entry">New Log Entry</button>
+        <button class="nav-btn" data-page="history">History</button>
+      </nav>
+
+      <div class="userbox">
+        <div class="mini">Authenticated user</div>
+        <div class="name" id="userName">Not signed in</div>
+        <div class="rank" id="userRank">No access loaded.</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h3 id="topTitle">Dashboard</h3>
+          <p id="topSub">Overview of the current log system and recent entries.</p>
+        </div>
+        <div class="pill" id="rankPill">Awaiting authentication</div>
+      </header>
+
+      <div class="content">
+        <section class="page active" id="page-dashboard">
+          <div class="hero">
+            <h1>Modern Logging Interface</h1>
+            <p>
+              This site replaces a spreadsheet-first workflow with a cleaner web interface for authorized personnel. The layout keeps the same core fields from your image — username, rank, reason of promotion or demotion, promotion cooldown, and logged by — while presenting them in a faster and more readable system. Roblox identity should be keyed to UserId server-side because usernames can change over time. :contentReference[oaicite:2]{index=2}
+            </p>
+          </div>
+
+          <div class="grid">
+            <article class="card half">
+              <div class="section-label">Authorization</div>
+              <h4>Access control</h4>
+              <p>
+                This portal is intended for users in Roblox group 831503444 who hold a group role rank of 18 or higher. The backend resolves the username to a Roblox user ID, loads that user’s group memberships, and blocks access if the required rank threshold is not met. :contentReference[oaicite:3]{index=3}
+              </p>
+            </article>
+
+            <article class="card half">
+              <div class="section-label">Structure</div>
+              <h4>Log format</h4>
+              <p>
+                Entries follow the same structure shown in your screenshot: username, rank, reason of promotion or demotion, promotion cooldown, and logged by. The history page shows the most recent entries in a table styled after a modern internal admin panel rather than a raw sheet.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section class="page" id="page-new-entry">
+          <div class="card">
+            <div class="section-label">Create entry</div>
+            <h4>Log promotion or demotion</h4>
+            <p>
+              Complete the fields below to create a new entry. Logged By will default to the authenticated staff member, but can be edited if your process requires a formatted name.
+            </p>
+
+            <div class="form-grid">
+              <input id="entryUsername" class="input" type="text" placeholder="Username" />
+              <input id="entryRank" class="input" type="text" placeholder="Rank" />
+              <textarea id="entryReason" class="textarea full" placeholder="Reason of promotion / demotion"></textarea>
+              <input id="entryCooldown" class="input" type="text" placeholder="Promotion cooldown (e.g. 0 days.)" />
+              <input id="entryLoggedBy" class="input" type="text" placeholder="Logged by" />
+            </div>
+
+            <div class="actions">
+              <button id="saveBtn" class="btn" type="button">Save Entry</button>
+              <button id="clearBtn" class="btn secondary" type="button">Clear</button>
+            </div>
+
+            <div id="saveStatus" class="status"></div>
+          </div>
+        </section>
+
+        <section class="page" id="page-history">
+          <div class="card">
+            <div class="section-label">Recent entries</div>
+            <h4>Promotion log history</h4>
+            <p>
+              This table shows the latest entries saved during the current session. For production use, connect the backend to a real database or spreadsheet.
+            </p>
+
+            <div id="historyWrap">
+              <div class="empty">No log entries yet.</div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const authBtn = document.getElementById("authBtn");
+    const authUsername = document.getElementById("authUsername");
+    const authStatus = document.getElementById("authStatus");
+    const userNameEl = document.getElementById("userName");
+    const userRankEl = document.getElementById("userRank");
+    const rankPill = document.getElementById("rankPill");
+
+    const nav = document.getElementById("nav");
+    const topTitle = document.getElementById("topTitle");
+    const topSub = document.getElementById("topSub");
+
+    const entryUsername = document.getElementById("entryUsername");
+    const entryRank = document.getElementById("entryRank");
+    const entryReason = document.getElementById("entryReason");
+    const entryCooldown = document.getElementById("entryCooldown");
+    const entryLoggedBy = document.getElementById("entryLoggedBy");
+    const saveBtn = document.getElementById("saveBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const saveStatus = document.getElementById("saveStatus");
+    const historyWrap = document.getElementById("historyWrap");
+
+    let currentUser = null;
+    let entries = [];
+
+    const meta = {
+      dashboard: {
+        title: "Dashboard",
+        sub: "Overview of the current log system and recent entries."
+      },
+      "new-entry": {
+        title: "New Log Entry",
+        sub: "Create and save a promotion or demotion entry."
+      },
+      history: {
+        title: "History",
+        sub: "Review the latest saved log entries."
+      }
+    };
+
+    function renderHistory() {
+      if (!entries.length) {
+        historyWrap.innerHTML = '<div class="empty">No log entries yet.</div>';
+        return;
+      }
+
+      const rows = entries.map(entry => `
+        <tr>
+          <td>${escapeHtml(entry.username)}</td>
+          <td>${escapeHtml(entry.rank)}</td>
+          <td>${escapeHtml(entry.reason)}</td>
+          <td>${escapeHtml(entry.cooldown)}</td>
+          <td>${escapeHtml(entry.loggedBy)}</td>
+        </tr>
+      `).join("");
+
+      historyWrap.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Rank</th>
+              <th>Reason of Promotion / Demotion</th>
+              <th>Promotion Cooldown</th>
+              <th>Logged By</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function setPage(pageName) {
+      document.querySelectorAll(".page").forEach(page => {
+        page.classList.toggle("active", page.id === `page-${pageName}`);
+      });
+
+      document.querySelectorAll(".nav-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.page === pageName);
+      });
+
+      topTitle.textContent = meta[pageName].title;
+      topSub.textContent = meta[pageName].sub;
+    }
+
+    nav.addEventListener("click", (event) => {
+      const btn = event.target.closest(".nav-btn");
+      if (!btn) return;
+      setPage(btn.dataset.page);
+    });
+
+    authBtn.addEventListener("click", async () => {
+      const username = authUsername.value.trim();
+      if (!username) {
+        authStatus.textContent = "Please enter a Roblox username.";
+        authStatus.className = "status error";
+        return;
+      }
+
+      authBtn.disabled = true;
+      authStatus.textContent = "Authenticating and checking group rank...";
+      authStatus.className = "status";
+
+      try {
+        const res = await fetch("/api/auth", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          authStatus.textContent = data.error || "Authentication failed.";
+          authStatus.className = "status error";
+          authBtn.disabled = false;
+          return;
+        }
+
+        currentUser = data;
+        userNameEl.textContent = data.username;
+        userRankEl.textContent = `${data.roleName} • Role Rank ${data.roleRank}`;
+        rankPill.textContent = `${data.username} • Authorized`;
+
+        entryLoggedBy.value = data.username;
+        document.body.classList.add("authed");
+        authStatus.textContent = "";
+      } catch (error) {
+        authStatus.textContent = "Network error. Please try again.";
+        authStatus.className = "status error";
+        authBtn.disabled = false;
+      }
+    });
+
+    authUsername.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") authBtn.click();
+    });
+
+    saveBtn.addEventListener("click", async () => {
+      if (!currentUser) {
+        saveStatus.textContent = "You must authenticate first.";
+        saveStatus.className = "status error";
+        return;
+      }
+
+      const payload = {
+        username: entryUsername.value.trim(),
+        rank: entryRank.value.trim(),
+        reason: entryReason.value.trim(),
+        cooldown: entryCooldown.value.trim(),
+        loggedBy: entryLoggedBy.value.trim() || currentUser.username
+      };
+
+      if (!payload.username || !payload.rank || !payload.reason || !payload.cooldown || !payload.loggedBy) {
+        saveStatus.textContent = "Please complete all fields before saving.";
+        saveStatus.className = "status error";
+        return;
+      }
+
+      saveBtn.disabled = true;
+      saveStatus.textContent = "Saving entry...";
+      saveStatus.className = "status";
+
+      try {
+        const res = await fetch("/api/log-entry", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ currentUser, entry: payload })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          saveStatus.textContent = data.error || "Failed to save entry.";
+          saveStatus.className = "status error";
+          saveBtn.disabled = false;
+          return;
+        }
+
+        entries.unshift(payload);
+        renderHistory();
+
+        saveStatus.textContent = "Entry saved successfully.";
+        saveStatus.className = "status ok";
+        saveBtn.disabled = false;
+        setPage("history");
+      } catch (error) {
+        saveStatus.textContent = "Network error. Please try again.";
+        saveStatus.className = "status error";
+        saveBtn.disabled = false;
+      }
+    });
+
+    clearBtn.addEventListener("click", () => {
+      entryUsername.value = "";
+      entryRank.value = "";
+      entryReason.value = "";
+      entryCooldown.value = "";
+      entryLoggedBy.value = currentUser ? currentUser.username : "";
+      saveStatus.textContent = "";
+      saveStatus.className = "status";
+    });
+
+    renderHistory();
+  </script>
 </body>
 </html>
