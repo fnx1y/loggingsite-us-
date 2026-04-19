@@ -10,8 +10,8 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Missing user or entry data." });
     }
 
-    if ((currentUser.roleRank ?? 0) < 248) {
-      return res.status(403).json({ error: "Unauthorized." });
+    if (currentUser.accessLevel !== "full") {
+      return res.status(403).json({ error: "Only full-access users may create log entries." });
     }
 
     const requiredFields = ["username", "rank", "reason", "cooldown", "loggedBy"];
