@@ -1,3 +1,8 @@
+function makeCode() {
+  const part = Math.random().toString(36).slice(2, 8).toUpperCase();
+  return `VERIFY-${part}`;
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed." });
@@ -34,36 +39,11 @@ export default async function handler(req, res) {
     }
 
     const user = userData.data[0];
-    const userId = user.id;
-
-    const groupsResponse = await fetch(`https://groups.roblox.com/v2/users/${userId}/groups/roles`);
-
-    if (!groupsResponse.ok) {
-      return res.status(502).json({ error: "Unable to load Roblox group roles." });
-    }
-
-    const groupsData = await groupsResponse.json();
-
-    const membership = (groupsData.data || []).find(
-      entry => entry.group && entry.group.id === 831503444
-    );
-
-    if (!membership) {
-      return res.status(403).json({ error: "Access denied. User is not in the required Roblox group." });
-    }
-
-    const roleRank = membership.role?.rank ?? 0;
-    const roleName = membership.role?.name ?? "Unknown Role";
-
-    if (roleRank < 18) {
-      return res.status(403).json({ error: "Access denied. Required group rank is 18 or higher." });
-    }
 
     return res.status(200).json({
       username: user.name,
-      userId,
-      roleName,
-      roleRank
+      userId: user.id,
+      code: makeCode()
     });
   } catch (error) {
     return res.status(500).json({ error: "Internal server error." });
