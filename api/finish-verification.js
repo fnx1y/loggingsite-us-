@@ -30,27 +30,38 @@ export default async function handler(req, res) {
     }
 
     const groupsData = await groupsResponse.json();
+    const memberships = groupsData.data || [];
 
-    const membership = (groupsData.data || []).find(
+    const fullAccessMembership = memberships.find(
       entry => entry.group && entry.group.id === 242317433
     );
 
-    if (!membership) {
-      return res.status(403).json({ error: "Access denied. User is not in the required Roblox group." });
+    const historyOnlyMembership = memberships.find(
+      entry => entry.group && entry.group.id === 831503444
+    );
+
+    if (fullAccessMembership && (fullAccessMembership.role?.rank ?? 0) >= 248) {
+      return res.status(200).json({
+        username,
+        userId,
+        roleName: fullAccessMembership.role?.name ?? "Unknown Role",
+        roleRank: fullAccessMembership.role?.rank ?? 0,
+        accessLevel: "full"
+      });
     }
 
-    const roleRank = membership.role?.rank ?? 0;
-    const roleName = membership.role?.name ?? "Unknown Role";
-
-    if (roleRank < 248) {
-      return res.status(403).json({ error: "Access denied. Required group rank is 248 or higher." });
+    if (historyOnlyMembership && (historyOnlyMembership.role?.rank ?? 0) >= 18) {
+      return res.status(200).json({
+        username,
+        userId,
+        roleName: historyOnlyMembership.role?.name ?? "Unknown Role",
+        roleRank: historyOnlyMembership.role?.rank ?? 0,
+        accessLevel: "history"
+      });
     }
 
-    return res.status(200).json({
-      username,
-      userId,
-      roleName,
-      roleRank
+    return res.status(403).json({
+      error: "Access denied. You do not meet the required rank in either authorized group."
     });
   } catch (error) {
     return res.status(500).json({ error: "Internal server error." });
