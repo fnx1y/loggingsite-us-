@@ -19,9 +19,9 @@
       --text:#eef5ff;
       --accent:#6ca8ff;
       --accent-2:#88bbff;
-      --danger:#ff6b6b;
+      --danger:#ff7d7d;
+      --ok:#9ed0ff;
       --shadow:0 18px 60px rgba(0,0,0,0.35);
-      --radius:22px;
     }
 
     *{box-sizing:border-box;margin:0;padding:0}
@@ -64,7 +64,7 @@
     }
 
     .auth-card{
-      width:min(460px, 92vw);
+      width:min(520px, 94vw);
       background:var(--panel);
       border:1px solid var(--line);
       border-radius:28px;
@@ -96,6 +96,15 @@
       margin-bottom:18px;
     }
 
+    .credit{
+      color:var(--soft);
+      font-size:12px;
+      margin-top:14px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      font-weight:700;
+    }
+
     .stack{display:grid;gap:12px}
 
     .input, .textarea, .select{
@@ -110,7 +119,7 @@
     }
 
     .textarea{
-      min-height:120px;
+      min-height:140px;
       resize:vertical;
     }
 
@@ -142,10 +151,33 @@
       min-height:20px;
       font-size:13px;
       color:var(--soft);
+      line-height:1.6;
     }
 
     .status.error{color:#ffd0d0}
     .status.ok{color:#cfe7ff}
+
+    .verify-box{
+      display:none;
+      margin-top:8px;
+      padding:16px;
+      border-radius:18px;
+      background:rgba(255,255,255,0.04);
+      border:1px solid var(--line);
+    }
+
+    .verify-box.active{display:block}
+
+    .verify-code{
+      margin-top:10px;
+      padding:12px 14px;
+      border-radius:14px;
+      background:rgba(255,255,255,0.06);
+      border:1px solid var(--line);
+      font-weight:800;
+      letter-spacing:.08em;
+      word-break:break-word;
+    }
 
     .app{
       display:none;
@@ -365,6 +397,14 @@
       margin-top:14px;
     }
 
+    .helper{
+      display:block;
+      margin-top:6px;
+      color:var(--soft);
+      font-size:12px;
+      line-height:1.6;
+    }
+
     table{
       width:100%;
       border-collapse:collapse;
@@ -423,15 +463,24 @@
     <div class="auth-card">
       <div class="eyebrow">Authorized Logging Portal</div>
       <h1>Promotion Log System</h1>
-      <p>
-        Sign in with a Roblox username to verify group membership in group 831503444. Access is granted only to users whose group role rank is 18 or higher. Roblox user lookup and group membership checks are handled server-side. :contentReference[oaicite:1]{index=1}
-      </p>
 
       <div class="stack">
         <input id="authUsername" class="input" type="text" placeholder="Enter Roblox username" />
-        <button id="authBtn" class="btn" type="button">Authenticate</button>
+        <button id="startVerifyBtn" class="btn" type="button">Start Verification</button>
+
+        <div id="verifyBox" class="verify-box">
+          <div class="status" style="margin-bottom:8px;">Place this code in your Roblox bio, then press Verify.</div>
+          <div id="verifyCode" class="verify-code"></div>
+          <div class="actions">
+            <button id="copyCodeBtn" class="btn secondary" type="button">Copy Code</button>
+            <button id="checkVerifyBtn" class="btn" type="button">Verify & Sign In</button>
+          </div>
+        </div>
+
         <div id="authStatus" class="status"></div>
       </div>
+
+      <div class="credit">Created by Survixzq</div>
     </div>
   </section>
 
@@ -441,7 +490,7 @@
         <div class="eyebrow">Department Logging</div>
         <h2>Public Logs Panel</h2>
         <p>
-          A modern log system inspired by your sheet layout, rebuilt for authorized personnel to add, review, and manage promotion and demotion entries.
+          A modern log system for authorized personnel to create and review promotion and demotion records.
         </p>
       </div>
 
@@ -472,24 +521,24 @@
           <div class="hero">
             <h1>Modern Logging Interface</h1>
             <p>
-              This site replaces a spreadsheet-first workflow with a cleaner web interface for authorized personnel. The layout keeps the same core fields from your image — username, rank, reason of promotion or demotion, promotion cooldown, and logged by — while presenting them in a faster and more readable system. Roblox identity should be keyed to UserId server-side because usernames can change over time. :contentReference[oaicite:2]{index=2}
+              This portal is built for authorized members of the group to create cleaner, more consistent promotion and demotion logs. The system keeps the same core fields as the original log layout while making them easier to fill out correctly and easier to review afterward.
             </p>
           </div>
 
           <div class="grid">
             <article class="card half">
               <div class="section-label">Authorization</div>
-              <h4>Access control</h4>
+              <h4>Restricted access</h4>
               <p>
-                This portal is intended for users in Roblox group 831503444 who hold a group role rank of 18 or higher. The backend resolves the username to a Roblox user ID, loads that user’s group memberships, and blocks access if the required rank threshold is not met. :contentReference[oaicite:3]{index=3}
+                Access is limited to verified Roblox users who are in the required group and hold a group role rank of 18 or higher.
               </p>
             </article>
 
             <article class="card half">
-              <div class="section-label">Structure</div>
-              <h4>Log format</h4>
+              <div class="section-label">Logging standard</div>
+              <h4>Entry quality</h4>
               <p>
-                Entries follow the same structure shown in your screenshot: username, rank, reason of promotion or demotion, promotion cooldown, and logged by. The history page shows the most recent entries in a table styled after a modern internal admin panel rather than a raw sheet.
+                The log form has been expanded with clearer field descriptions so staff can record rank changes more accurately and with less room for messy entries.
               </p>
             </article>
           </div>
@@ -498,17 +547,36 @@
         <section class="page" id="page-new-entry">
           <div class="card">
             <div class="section-label">Create entry</div>
-            <h4>Log promotion or demotion</h4>
+            <h4>Log a promotion or demotion</h4>
             <p>
-              Complete the fields below to create a new entry. Logged By will default to the authenticated staff member, but can be edited if your process requires a formatted name.
+              Complete every field carefully. The goal is to make entries clear enough that another authorized person could review the log later and immediately understand who was changed, what rank was involved, why the action happened, whether a cooldown applies, and who officially recorded it.
             </p>
 
             <div class="form-grid">
-              <input id="entryUsername" class="input" type="text" placeholder="Username" />
-              <input id="entryRank" class="input" type="text" placeholder="Rank" />
-              <textarea id="entryReason" class="textarea full" placeholder="Reason of promotion / demotion"></textarea>
-              <input id="entryCooldown" class="input" type="text" placeholder="Promotion cooldown (e.g. 0 days.)" />
-              <input id="entryLoggedBy" class="input" type="text" placeholder="Logged by" />
+              <div>
+                <input id="entryUsername" class="input" type="text" placeholder="Username of the person being logged" />
+                <span class="helper">Enter the exact Roblox username of the person who was promoted or demoted.</span>
+              </div>
+
+              <div>
+                <input id="entryRank" class="input" type="text" placeholder="New rank or current rank after the change" />
+                <span class="helper">Enter the rank they now hold after the promotion or demotion is applied.</span>
+              </div>
+
+              <div class="full">
+                <textarea id="entryReason" class="textarea" placeholder="Detailed reason of promotion or demotion"></textarea>
+                <span class="helper">State exactly why the change happened. Include the position earned, transfer reason, inactivity issue, reassignment, performance reason, or other relevant context.</span>
+              </div>
+
+              <div>
+                <input id="entryCooldown" class="input" type="text" placeholder="Promotion cooldown, such as 0 days. or 7 days." />
+                <span class="helper">Enter the cooldown in the same style each time so the logs stay consistent.</span>
+              </div>
+
+              <div>
+                <input id="entryLoggedBy" class="input" type="text" placeholder="Logged by" />
+                <span class="helper">This should be the staff member officially recording the entry.</span>
+              </div>
             </div>
 
             <div class="actions">
@@ -525,7 +593,7 @@
             <div class="section-label">Recent entries</div>
             <h4>Promotion log history</h4>
             <p>
-              This table shows the latest entries saved during the current session. For production use, connect the backend to a real database or spreadsheet.
+              This table shows the latest entries saved during the current session.
             </p>
 
             <div id="historyWrap">
@@ -538,9 +606,14 @@
   </div>
 
   <script>
-    const authBtn = document.getElementById("authBtn");
     const authUsername = document.getElementById("authUsername");
+    const startVerifyBtn = document.getElementById("startVerifyBtn");
+    const checkVerifyBtn = document.getElementById("checkVerifyBtn");
+    const copyCodeBtn = document.getElementById("copyCodeBtn");
+    const verifyBox = document.getElementById("verifyBox");
+    const verifyCode = document.getElementById("verifyCode");
     const authStatus = document.getElementById("authStatus");
+
     const userNameEl = document.getElementById("userName");
     const userRankEl = document.getElementById("userRank");
     const rankPill = document.getElementById("rankPill");
@@ -560,6 +633,7 @@
     const historyWrap = document.getElementById("historyWrap");
 
     let currentUser = null;
+    let pendingVerification = null;
     let entries = [];
 
     const meta = {
@@ -637,7 +711,7 @@
       setPage(btn.dataset.page);
     });
 
-    authBtn.addEventListener("click", async () => {
+    startVerifyBtn.addEventListener("click", async () => {
       const username = authUsername.value.trim();
       if (!username) {
         authStatus.textContent = "Please enter a Roblox username.";
@@ -645,12 +719,12 @@
         return;
       }
 
-      authBtn.disabled = true;
-      authStatus.textContent = "Authenticating and checking group rank...";
+      startVerifyBtn.disabled = true;
+      authStatus.textContent = "Generating verification code...";
       authStatus.className = "status";
 
       try {
-        const res = await fetch("/api/auth", {
+        const res = await fetch("/api/start-verification", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username })
@@ -659,9 +733,65 @@
         const data = await res.json();
 
         if (!res.ok) {
-          authStatus.textContent = data.error || "Authentication failed.";
+          authStatus.textContent = data.error || "Unable to start verification.";
           authStatus.className = "status error";
-          authBtn.disabled = false;
+          startVerifyBtn.disabled = false;
+          return;
+        }
+
+        pendingVerification = data;
+        verifyCode.textContent = data.code;
+        verifyBox.classList.add("active");
+        authStatus.textContent = "Verification code generated.";
+        authStatus.className = "status ok";
+        startVerifyBtn.disabled = false;
+      } catch (error) {
+        authStatus.textContent = "Network error. Please try again.";
+        authStatus.className = "status error";
+        startVerifyBtn.disabled = false;
+      }
+    });
+
+    copyCodeBtn.addEventListener("click", async () => {
+      if (!pendingVerification) return;
+      try {
+        await navigator.clipboard.writeText(pendingVerification.code);
+        authStatus.textContent = "Verification code copied.";
+        authStatus.className = "status ok";
+      } catch (error) {
+        authStatus.textContent = "Copy failed. Select the code manually.";
+        authStatus.className = "status error";
+      }
+    });
+
+    checkVerifyBtn.addEventListener("click", async () => {
+      if (!pendingVerification) {
+        authStatus.textContent = "Start verification first.";
+        authStatus.className = "status error";
+        return;
+      }
+
+      checkVerifyBtn.disabled = true;
+      authStatus.textContent = "Checking bio and group rank...";
+      authStatus.className = "status";
+
+      try {
+        const res = await fetch("/api/finish-verification", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: pendingVerification.username,
+            userId: pendingVerification.userId,
+            code: pendingVerification.code
+          })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          authStatus.textContent = data.error || "Verification failed.";
+          authStatus.className = "status error";
+          checkVerifyBtn.disabled = false;
           return;
         }
 
@@ -676,17 +806,13 @@
       } catch (error) {
         authStatus.textContent = "Network error. Please try again.";
         authStatus.className = "status error";
-        authBtn.disabled = false;
+        checkVerifyBtn.disabled = false;
       }
-    });
-
-    authUsername.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") authBtn.click();
     });
 
     saveBtn.addEventListener("click", async () => {
       if (!currentUser) {
-        saveStatus.textContent = "You must authenticate first.";
+        saveStatus.textContent = "You must verify first.";
         saveStatus.className = "status error";
         return;
       }
